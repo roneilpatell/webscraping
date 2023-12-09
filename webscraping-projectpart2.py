@@ -6,83 +6,81 @@ import plotly.express as px
 tags = []
 diction = {}
 quotes = {}
-quote_len = {}
-num = 1
+len_quotes = {}
+val = 1
 
 for values in range(10):
-    url = f'http://quotes.toscrape.com/page/{str(num)}/'
+    url = f'http://quotes.toscrape.com/page/{str(val)}/'
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
     request = Request(url, headers=headers)
     webpage = urlopen(request).read()
     soup = BeautifulSoup(webpage, 'html.parser')
-    sums = 0
+    counter = 0
 
-    for new_quotes in range(10):
-        raw_quotes = soup.findAll("span", attrs={"class": "text"})
-        rawquotes_text = raw_quotes[sums].text
-        next_quote = raw_quotes[sums].text.replace('.', '').replace(',', '').replace(u"\u201C", "").replace(u"\u201D", "")
+    for values in range(10):
+        quote = soup.findAll("span", attrs={"class": "text"})
+        quote_text = quote[counter].text
+        next_quote = quote[counter].text.replace('.', '').replace(',', '').replace(u"\u201C", "").replace(u"\u201D", "")
 
         author_data = soup.findAll("small", attrs={"class": "author"})
-        author = author_data[sums].text
+        author = author_data[counter].text
 
-        tags = soup.findAll("div", attrs={"class": "tags"})
-        new_tag = tags[sums].text.replace("Tags:", "")
-        tags.extend(new_tag.split())
-        
-        quote_len[rawquotes_text] = [len(rawquotes_text)]
-        sums += 1
-
+        tag = soup.findAll("div", attrs={"class": "tags"})
+        next_tag = tag[counter].text.replace("Tags:", "")
+        tags.extend(next_tag.split())
+        len_quotes[quote_text] = [len(quote_text)]
+        counter += 1
         if author in quotes:
             quotes[author].append(next_quote)
         else:
             quotes[author] = [next_quote]
 
-for item_tags in tags:
-    if item_tags in diction:
-        diction[item_tags] += 1
+
+for tag in tags:
+    if tag in diction:
+        diction[tag] += 1
     else:
-        diction[item_tags] = 1
+        diction[tag] = 1
 
-maximum_count = max(diction.values())
-highest_tag = [word for word, count in diction.items() if count == maximum_count]
-total_quote = {author: len(quotes) for author, quotes in quotes.items()}
-most_quote = max(total_quote, key=total_quote.get)
-least_quote = min(total_quote, key=total_quote.get)
-total_length = sum(length[0] for length in quote_len.values())
-count_quotes = len(quote_len)
-average_length = round(total_length / count_quotes)
-longest_quote = max(quote_len, key=lambda quote: quote_len[quote][0])
-shortest_quote = min(quote_len, key=lambda quote: quote_len[quote][0])
+highest_count = max(diction.values())
+most_popular_tag = [word for word, count in diction.items() if count == highest_count]
+quote_count = {author: len(quotes) for author, quotes in quotes.items()}
+most_quotes = max(quote_count, key=quote_count.get)
+least_quotes = min(quote_count, key=quote_count.get)
+total_length = sum(length[0] for length in len_quotes.values())
+num_quotes = len(len_quotes)
+avgquot_length = round(total_length / num_quotes)
+longest_quote = max(len_quotes, key=lambda quote: len_quotes[quote][0])
+shortest_quote = min(len_quotes, key=lambda quote: len_quotes[quote][0])
 
-print(f'\n--AUTHORS--')
-for a_name, b_value in total_quote.items():
+print(f'\n--AUTHOR STATISTICS--')
+for a_name, q_value in quote_count.items():
     print(f'\nAuthor: {a_name}')
-    print(f'Quote Count: {b_value}')
+    print(f'Quote Count: {q_value}')
+print(f'\nThe author with the most amount of quotes:\n{most_quotes}')
+print(f'\nThe authors with the least amount of quotes:')
 
-print(f'\nThe author(s) with most amount of quotes:\n{most_quote}')
-print(f'\nThe authors(s) with the least amount of quotes:')
-
-for author_name in least_quote:
+for author_name in least_quotes:
     print(author_name)
 
-print(f'\n--QUOTES--')
-print(f'\nAverage Quote Length:\n{average_length}')
+print(f'\n--QUOTE ANALYSIS--')
+print(f'\nAverage Quote Length:\n{avgquot_length}')
 print(f'\nLongest Quote:\n{longest_quote}')
 print(f'\nShortest Quote:\n{shortest_quote}')
 
-print(f'\n--TAGS--')
-print(f'\nThe most popular tag is:\n{(str(highest_tag[0])).title()}')
+print(f'\n--TAG ANALYSIS--')
+print(f'\nThe tag that is most used is:\n{(str(most_popular_tag[0])).title()}')
 print(f'\nNumber of total tags used:\n{len(tags)}\n')
 
-authors_data_frame = sorted(total_quote.items(), key=lambda x_value: x_value[1], reverse=True)[:10]
-authors_frame = pd.DataFrame(authors_data_frame, columns=['Authors', 'Totals of Quotes'])
+authors_data_frame = sorted(quote_count.items(), key=lambda x_value: x_value[1], reverse=True)[:10]
+authors_frame = pd.DataFrame(authors_data_frame, columns=['Author', 'Number of Quotes'])
 top_tags_frame = sorted(diction.items(), key=lambda x_value: x_value[1], reverse=True)[:10]
-top_tags_data_frame = pd.DataFrame(top_tags_frame, columns=['Tags', 'Popularity'])
+top_tags_data_frame = pd.DataFrame(top_tags_frame, columns=['Tag', 'Popularity'])
 
-authors_graph = px.bar(authors_frame, x='Author', y='Number of Quotes', title='Top 10 Authors and Their Corresponding Number of Quotes')
-authors_graph.update_layout(xaxis_title='Author', yaxis_title='Number of Quotes')
-authors_graph.show()
+author_graph = px.bar(authors_frame, x='Author', y='Number of Quotes', title='Top 10 Authors and Their Corresponding Number of Quotes')
+author_graph.update_layout(xaxis_title='Author', yaxis_title='Number of Quotes')
+author_graph.show()
 
-tags_graph = px.bar(top_tags_data_frame, x='Tag', y='Popularity', title='Top 10 Tags Based on Popularity')
-tags_graph.update_layout(xaxis_title='Tag', yaxis_title='Popularity')
-tags_graph.show()
+tag_graph = px.bar(top_tags_data_frame, x='Tag', y='Popularity', title='Top 10 Tags Based on Popularity')
+tag_graph.update_layout(xaxis_title='Tag', yaxis_title='Popularity')
+tag_graph.show()
