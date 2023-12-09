@@ -53,7 +53,7 @@ avgquot_length = round(total_length / num_quotes)
 longest_quote = max(len_quotes, key=lambda quote: len_quotes[quote][0])
 shortest_quote = min(len_quotes, key=lambda quote: len_quotes[quote][0])
 
-print(f'\n--AUTHOR STATISTICS--')
+print(f'\nAUTHORS')
 for a_name, q_value in quote_count.items():
     print(f'\nAuthor: {a_name}')
     print(f'Quote Count: {q_value}')
@@ -63,12 +63,12 @@ print(f'\nThe authors with the least amount of quotes:')
 for author_name in least_quotes:
     print(author_name)
 
-print(f'\n--QUOTE ANALYSIS--')
+print(f'\nQUOTES')
 print(f'\nAverage Quote Length:\n{avgquot_length}')
 print(f'\nLongest Quote:\n{longest_quote}')
 print(f'\nShortest Quote:\n{shortest_quote}')
 
-print(f'\n--TAG ANALYSIS--')
+print(f'\nTAGS DATA')
 print(f'\nThe tag that is most used is:\n{(str(most_popular_tag[0])).title()}')
 print(f'\nNumber of total tags used:\n{len(tags)}\n')
 
