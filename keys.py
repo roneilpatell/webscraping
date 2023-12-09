@@ -7,9 +7,9 @@ mapquest_key = ''
 
 
 api_key =  'ACecf425cf39e58942ad8559b1c81981a5'
-api_key_secret = 'cbf679d6db94f52873ec19ae78d3673e'
+api_key_secret = ''
 bearer_token = ''
 
 
 accountSID = 'ACecf425cf39e58942ad8559b1c81981a5'
-authToken = 'cbf679d6db94f52873ec19ae78d3673e'
+authToken = '8308d1f3231d548d811171856f326fe4'
